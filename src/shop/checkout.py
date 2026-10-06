@@ -83,4 +83,7 @@ def calculate_order_total(
     if validate_order(lines, promo_code, shipping_city) is not None:
         return None
     subtotal = sum(int(line["qty"]) * int(line["unit_price_kopecks"]) for line in lines)
-    return subtotal + percent_of(subtotal, VAT_PERCENT)
+    total_qty = sum(int(line["qty"]) for line in lines)
+    discount_percent = 5 if total_qty >= 10 else 0
+    discounted_subtotal = subtotal - percent_of(subtotal, discount_percent)
+    return discounted_subtotal + percent_of(discounted_subtotal, VAT_PERCENT)
