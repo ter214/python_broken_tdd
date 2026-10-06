@@ -1,7 +1,7 @@
 """Order checkout.
 
 The rules live in `src/shop/specs/checkout.md` - read it first.
-Both functions below are stubs: their signature is final, the bodies are yours.
+Validation and totals follow the warehouse export and pricing rules.
 Do not change the constants: the tests rely on them.
 """
 
