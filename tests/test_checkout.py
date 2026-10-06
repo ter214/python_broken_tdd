@@ -55,7 +55,10 @@ def test_missing_line_key_is_rejected() -> None:
 
 def test_non_numeric_quantity_is_rejected() -> None:
     """Spec 3, rule 4: `qty` must be a whole number."""
-    ...
+    for qty in ("abc", "1.5", "", "1__0", "+", "²", "9" * 5000):
+        reason = validate_order([line(qty=qty)])
+        assert reason is not None
+        assert reason.strip()
 
 
 def test_zero_quantity_is_rejected() -> None:
