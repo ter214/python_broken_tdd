@@ -5,6 +5,9 @@ Both functions below are stubs: their signature is final, the bodies are yours.
 Do not change the constants: the tests rely on them.
 """
 
+import re
+import sys
+
 PROMO_CODES = {"WELCOME10": 10, "SUMMER15": 15, "VIP35": 35}
 SUPPORTED_CITIES = ("msk", "spb")
 MAX_DISCOUNT_PERCENT = 30
@@ -13,6 +16,17 @@ SHIPPING_KOPEKS = 49_000
 FREE_DELIVERY_FROM_KOPEKS = 500_000
 TIER_DISCOUNTS = ((10, 5), (25, 10), (50, 15))
 REQUIRED_LINE_KEYS = ("sku", "qty", "unit_price_kopecks")
+
+
+def _parse_integer(value: str) -> int | None:
+    """Parse decimal export values without exceptions, including signs and underscores."""
+    text = value.strip()
+    if re.fullmatch(r"[+-]?\d(?:_?\d)*", text) is None:
+        return None
+    limit = sys.get_int_max_str_digits()
+    if limit and sum(character.isdecimal() for character in text) > limit:
+        return None
+    return int(text)
 
 
 def validate_order(
@@ -29,6 +43,8 @@ def validate_order(
                 return f"Line {number} is missing {key}"
         if line.get("sku") == "":
             return f"Line {number} must have a non-empty SKU"
+        if _parse_integer(line["qty"]) is None:
+            return f"Line {number} quantity must be an integer"
     return None
 
 
