@@ -88,5 +88,6 @@ def calculate_order_total(
     for threshold, percent in TIER_DISCOUNTS:
         if total_qty >= threshold:
             discount_percent = percent
+    discount_percent = max(discount_percent, PROMO_CODES.get(promo_code, 0))
     discounted_subtotal = subtotal - percent_of(subtotal, discount_percent)
     return discounted_subtotal + percent_of(discounted_subtotal, VAT_PERCENT)
