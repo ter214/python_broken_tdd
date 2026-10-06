@@ -37,12 +37,16 @@ def validate_order(
     """Return a human readable reason why the order is invalid, or None if it is fine."""
     if not lines:
         return "Order must contain at least one line"
+    seen_skus: set[str] = set()
     for number, line in enumerate(lines, start=1):
         for key in REQUIRED_LINE_KEYS:
             if key not in line:
                 return f"Line {number} is missing {key}"
         if line.get("sku") == "":
             return f"Line {number} must have a non-empty SKU"
+        if line["sku"] in seen_skus:
+            return f"Line {number} repeats SKU {line['sku']}"
+        seen_skus.add(line["sku"])
         if _parse_integer(line["qty"]) is None:
             return f"Line {number} quantity must be an integer"
         if int(line["qty"]) <= 0:
