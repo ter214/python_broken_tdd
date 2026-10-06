@@ -49,6 +49,8 @@ def validate_order(
             return f"Line {number} quantity must be positive"
         if _parse_integer(line["unit_price_kopecks"]) is None:
             return f"Line {number} price must be an integer"
+        if int(line["unit_price_kopecks"]) < 0:
+            return f"Line {number} price must be non-negative"
     return None
 
 
