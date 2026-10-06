@@ -107,7 +107,10 @@ def test_unsupported_city_is_rejected() -> None:
 
 def test_valid_order_passes_validation() -> None:
     """Spec 3: a good order gets None back instead of a reason."""
-    ...
+    order_line = line(qty=" +1_0 ", unit_price_kopecks="０")
+    order_line["ignored"] = "extra field"
+    assert validate_order([order_line], "WELCOME10", "msk") is None
+    assert validate_order([line(sku="A"), line(sku="B")], "SUMMER15", "spb") is None
 
 
 def test_no_discount_below_first_tier() -> None:
