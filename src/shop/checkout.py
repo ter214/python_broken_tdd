@@ -29,6 +29,26 @@ def _parse_integer(value: str) -> int | None:
     return int(text)
 
 
+def _validate_line(line: dict[str, str], number: int) -> str | None:
+    """Validate the fields before any arithmetic or duplicate checks."""
+    for key in REQUIRED_LINE_KEYS:
+        if key not in line:
+            return f"Line {number} is missing {key}"
+    if not line["sku"]:
+        return f"Line {number} must have a non-empty SKU"
+    qty = _parse_integer(line["qty"])
+    if qty is None:
+        return f"Line {number} quantity must be an integer"
+    if qty <= 0:
+        return f"Line {number} quantity must be positive"
+    price = _parse_integer(line["unit_price_kopecks"])
+    if price is None:
+        return f"Line {number} price must be an integer"
+    if price < 0:
+        return f"Line {number} price must be non-negative"
+    return None
+
+
 def validate_order(
     lines: list[dict[str, str]],
     promo_code: str = "",
@@ -43,22 +63,12 @@ def validate_order(
         return "Order must contain at least one line"
     seen_skus: set[str] = set()
     for number, line in enumerate(lines, start=1):
-        for key in REQUIRED_LINE_KEYS:
-            if key not in line:
-                return f"Line {number} is missing {key}"
-        if line.get("sku") == "":
-            return f"Line {number} must have a non-empty SKU"
+        reason = _validate_line(line, number)
+        if reason is not None:
+            return reason
         if line["sku"] in seen_skus:
             return f"Line {number} repeats SKU {line['sku']}"
         seen_skus.add(line["sku"])
-        if _parse_integer(line["qty"]) is None:
-            return f"Line {number} quantity must be an integer"
-        if int(line["qty"]) <= 0:
-            return f"Line {number} quantity must be positive"
-        if _parse_integer(line["unit_price_kopecks"]) is None:
-            return f"Line {number} price must be an integer"
-        if int(line["unit_price_kopecks"]) < 0:
-            return f"Line {number} price must be non-negative"
     return None
 
 
