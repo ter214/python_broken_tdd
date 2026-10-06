@@ -35,6 +35,8 @@ def validate_order(
     shipping_city: str = "",
 ) -> str | None:
     """Return a human readable reason why the order is invalid, or None if it is fine."""
+    if promo_code and promo_code not in PROMO_CODES:
+        return "Unknown promo code"
     if not lines:
         return "Order must contain at least one line"
     seen_skus: set[str] = set()
