@@ -45,6 +45,8 @@ def validate_order(
             return f"Line {number} must have a non-empty SKU"
         if _parse_integer(line["qty"]) is None:
             return f"Line {number} quantity must be an integer"
+        if int(line["qty"]) <= 0:
+            return f"Line {number} quantity must be positive"
     return None
 
 
